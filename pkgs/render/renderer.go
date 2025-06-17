@@ -30,10 +30,17 @@ func Render(v []Point, fill bool, s tcell.Screen, style tcell.Style){
 			scan_br.Y = vertex.Y
 		}
 	}
+
+  // literal "edge" cases
+  scan_br.X += 1
+  scan_br.Y += 1
+  scan_tl.X -= 1
+  scan_tl.Y -= 1
+
 	// scan
+  horizontal_intersections := make([]int, 0, scan_br.X - scan_tl.X)
 	for y := scan_tl.Y; y <= scan_br.Y; y++{
 		prev_on_edge := false
-		toggle := false // scan line on
 		for x := scan_tl.X; x <= scan_br.X; x++{
 			curr_on_edge := false
 			for i := 0; i < l; i++{
@@ -56,17 +63,19 @@ func Render(v []Point, fill bool, s tcell.Screen, style tcell.Style){
 				} 
 			}	
 			if fill {
-				if	!curr_on_edge && prev_on_edge && 
-						(y != scan_tl.Y) && (y != scan_br.Y){
-					// if current point is not on edge but previous point was...
-					toggle = !toggle
-				}
-				if toggle {
-					s.SetContent(x, y, tcell.RuneBlock, nil, style)
-				}
+        if prev_on_edge && !curr_on_edge {
+          horizontal_intersections = append(horizontal_intersections, x)
+        }
 				prev_on_edge = curr_on_edge
 			}
 		}
+    if fill {
+      for i := 0; (i + 1) < len(horizontal_intersections); i += 2 {
+        for x := horizontal_intersections[i] + 1; x < horizontal_intersections[i + 1]; x++ {
+          s.SetContent(x, y, tcell.RuneBlock, nil, style)
+        }
+      }
+    horizontal_intersections = horizontal_intersections[:0]
+    }
 	}
-	return	
 }
