@@ -71,7 +71,7 @@ func Render(v []Point, fill bool, s tcell.Screen, style tcell.Style){
 		}
     if fill {
       for i := 0; (i + 1) < len(horizontal_intersections); i += 2 {
-        for x := horizontal_intersections[i] + 1; x < horizontal_intersections[i + 1]; x++ {
+        for x := horizontal_intersections[i]; x < horizontal_intersections[i + 1]; x++ {
           s.SetContent(x, y, tcell.RuneBlock, nil, style)
         }
       }
