@@ -9,7 +9,7 @@ type Point struct {
 	X, Y int
 }
 
-func Render(v []Point, fill bool, s tcell.Screen, style tcell.Style){
+func Render(v []Point, fill rune, s tcell.Screen, style tcell.Style){
 	l := len(v)
 	if l < 3 {
 		return
@@ -58,24 +58,20 @@ func Render(v []Point, fill bool, s tcell.Screen, style tcell.Style){
 												(y <= max(p1.Y, p2.Y)) &&
 												(y >= min(p1.Y, p2.Y))
 				if curr_on_edge {
-					s.SetContent(x, y, tcell.RuneBlock, nil, style)
+					s.SetContent(x, y, fill, nil, style)
 					break
 				} 
 			}	
-			if fill {
-        if prev_on_edge && !curr_on_edge {
-          horizontal_intersections = append(horizontal_intersections, x)
-        }
-				prev_on_edge = curr_on_edge
-			}
-		}
-    if fill {
-      for i := 0; (i + 1) < len(horizontal_intersections); i += 2 {
-        for x := horizontal_intersections[i]; x < horizontal_intersections[i + 1]; x++ {
-          s.SetContent(x, y, tcell.RuneBlock, nil, style)
-        }
+      if prev_on_edge && !curr_on_edge {
+        horizontal_intersections = append(horizontal_intersections, x)
       }
-    horizontal_intersections = horizontal_intersections[:0]
+      prev_on_edge = curr_on_edge
+		}
+    for i := 0; (i + 1) < len(horizontal_intersections); i += 2 {
+      for x := horizontal_intersections[i]; x < horizontal_intersections[i + 1]; x++ {
+        s.SetContent(x, y, fill, nil, style)
+      }
     }
+  horizontal_intersections = horizontal_intersections[:0]
 	}
 }
